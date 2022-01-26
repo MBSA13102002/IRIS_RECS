@@ -86,5 +86,4 @@ def hostel():
 def gyan():
     return render_template('mess_detail.html')
 
-if __name__ == '__main__':
-    app.run(debug = True)
+
