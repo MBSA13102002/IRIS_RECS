@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+</style>
+<body>
+    {% macro catch(on_exception) %}
+    {{ handle_catch(caller, on_exception) }}
+    {% endmacro %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">IRIS</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">NITK Surathkal</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/hostel">Hostels</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/gyan">Gyan</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="/mess">Mess Dashboard</a>
+              </li>
+            </ul>
+            <form class="d-flex">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+      </nav>
+      <div class="container-fluid row">
+
+    <h1 class = 'text-center'>This will be the payment gateway for accepting the Payment!!!</h1>
+    <marquee behavior="" direction="">All the Disabled Input will be automatically filled for a particualr student!!!(The Student has to just Select the mess of his/her choice)
+    </marquee>
+    <div class="row my-4">
+        <div class="col-6">
+            <input class="form-control" type="text" value="YOUR NAME" aria-label="Disabled input example" disabled readonly>
+        </div>
+        <div class="col-6">
+            <input class="form-control" type="text" value="YOUR ROLL NO." aria-label="Disabled input example" disabled readonly>
+        </div>
+    </div>
+    <form action="/mess/registration" method = 'post'>
+    <div class="row my-4">
+        <div class="col-6">
+            <select class="form-control" type="text"  aria-label="Disabled input example"name = "Mess_Name" >
+                <option value="Karavali (VEG)">Karavali (VEG)</option>
+                <option value="Aravali (VEG)">Aravali (VEG)</option>
+                <option value="Vindhya (VEG)">Vindhya (VEG)</option>
+                <option value="Satpura (VEG)">Satpura (VEG)</option>
+                <option value="Nilgiri (NON-VEG)">Nilgiri (NON-VEG)</option>
+                <option value="Trishul (NON-VEG)">Trishul (NON-VEG)</option>
+                <option value="Chaitanya (NON-VEG)">Chaitanya (NON-VEG)</option>
+                <option value="Mega Mess (NON-VEG)">Mega Mess (NON-VEG)</option>
+            </select>
+            <h6>*Select Your Mess From Above List</h6>
+        </div>
+        <div class="col-6">
+            <input class="form-control" type="text" value="YOUR BLOCK NUMBER" aria-label="Disabled input example" disabled readonly>
+        </div>
+    </div>
+    <div class="row my-4">
+        <div class="col-6">
+            <input class="form-control" type="text" value="YOUR ROOM NUMBER" aria-label="Disabled input example" disabled readonly>
+        </div>
+        <div class="col-6">
+            <input class="form-control" type="text" value="YOUR BRANCH" aria-label="Disabled input example" disabled readonly>
+        </div>
+    </div>
+    <div class = "row my-2">
+       <div class="col-5"></div>
+       <div class="col-2">
+        <input class="form-control" type="text" value="₹10,000" aria-label="Disabled input example" disabled readonly>
+    
+       </div>
+       <div class="col-5"></div>
+    </div>
+    <div class = "row my-2">
+       <div class="col-5"></div>
+       <div class="col-2">
+           
+
+               <button type ="submit" class = "btn btn-primary">Proceed to Payment</button>
+           </form>
+       </div>
+       <div class="col-5"></div>
+    </div>
+      </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
