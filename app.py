@@ -78,6 +78,17 @@ def mess_registration():
         return resp_
     return render_template('mess_detail_registration.html')
 
+@app.route('/mess/delete',methods = ['GET','POST'])
+def mess_delete():
+    if request.method == 'POST':
+        resp = make_response(redirect(url_for('start')))
+        resp.set_cookie('__user__','',max_age=0)
+        resp.set_cookie('__mess_name__','',max_age=0)
+        resp.set_cookie('__registered__','',max_age=0)
+        resp.set_cookie('__mess_card_number__','',max_age=0)
+        resp.set_cookie('__issuedate__','',max_age=0)
+        return resp
+    
 @app.route('/hostel',methods = ['GET','POST'])
 def hostel():
     return render_template('hostel.html')
