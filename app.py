@@ -1,4 +1,5 @@
 
+
 from flask import Flask,render_template,request,url_for,make_response,redirect
 from firebase import Firebase
 import json
@@ -36,7 +37,11 @@ def index():
         upass = request.form.get("password")
         try:
             user_ = auth.sign_in_with_email_and_password(uname ,upass)
-            resp = make_response(render_template("dashboard.html",handle_catch = handle_catch))
+            try:
+                all_forms = db.child("Forms").child(request.cookies.get("__user__")).get().val()
+            except:
+                all_forms  = {}
+            resp = make_response(render_template("dashboard.html",forms = all_forms,handle_catch = handle_catch))
             resp.set_cookie('__user__', user_['localId'],max_age=60*60*24)
             resp.set_cookie('__email__', user_['email'],max_age=60*60*24)
             return resp
@@ -155,13 +160,13 @@ def passchange():
         return render_template("passwordchange.html",val = "true")
     return render_template("passwordchange.html",val = "false")
 
-@app.route("/test",methods=['GET'])
-def mnsa():
-    return render_template("main_form.html")
-@app.route("/data",methods=['GET','POST'])
-def mnsa_():
+@app.route("/form-delete/<string:form_id>",methods = ['GET','POST'])
+def delete(form_id):
     if request.method == 'POST':
-        print(dict(request.form))
-        return "0"
+        db.child("Forms").child(request.cookies.get("__user__")).child(form_id).remove()
+        return redirect(url_for('index'))
+
+
+
 # if __name__ == '__main__':
 #     app.run(debug =True)
