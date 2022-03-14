@@ -248,20 +248,20 @@
 
       <div class="input-group my-2" id="{{key}}">
         <input class="input-group-text mx-2" value="{{val['text']}}">
-        <select name="" id="{{key_}}_select" class="form-control">
+        <select name="" id="{{key}}_select" class="form-control">
             <option value="Options" default> Option List</option>
           {% for key_opt,opt in val['options'].items()%}
           <option value="{{key_opt}}">{{opt}}</option>
           {% endfor %}
         </select>
-        <i class="fa fa-plus-circle mx-1" style="font-size:35px;cursor:pointer" data-bs-toggle="modal" data-bs-target="#Options_Modal"></i>
-        <i class="fa fa-times-circle mx-1" style="font-size:35px;cursor:pointer" onclick = "Remove_Field('{{key_}}')"></i>
+        <i class="fa fa-plus-circle mx-1" style="font-size:35px;cursor:pointer" data-bs-toggle="modal" data-bs-target="#{{key}}_Options_Modal"></i>
+        <i class="fa fa-times-circle mx-1" style="font-size:35px;cursor:pointer" onclick = "Remove_Field('{{key}}')"></i>
 
       </div>
 
 
 
-      <div class="modal fade" id="Options_Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade" id="{{key}}_Options_Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -271,17 +271,21 @@
             <div class="modal-body">
               <div class="mb-3">
                 <label for="exampleFormControlInput1" class="form-label">Option</label>
-                <input type="text" class="form-control" id="option_add" placeholder="Write option">
+                <input type="text" class="form-control" id="{{key}}_option_add" placeholder="Write option">
               </div>
               <div class="row">
-                <div class="col" id="all_options">
-                  
+                <div class="col" id="{{key}}_all_options">
+                  {% for key_opt,opt in val['options'].items()%}
+                  <span class="badge rounded-pill bg-primary my-1" style="font-size:15px" id="{{key_opt}}" >{{opt}}<i class="fa fa-times-circle  mx-1" style="cursor:pointer" onclick = "Remove_Option('{{key}}','{{key_opt}}')"></i></span>
+                  {% endfor %}
+
+      
                 </div>
               </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary"  onclick = "Add_Option('{{key_}}')">Add Option</button>
+              <button type="button" class="btn btn-primary"  onclick = "Add_Option('{{key}}')">Add Option</button>
             </div>
           </div>
         </div>
