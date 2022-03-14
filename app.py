@@ -163,5 +163,5 @@ def mnsa_():
     if request.method == 'POST':
         print(dict(request.form))
         return "0"
-if __name__ == '__main__':
-    app.run(debug =True)
+# if __name__ == '__main__':
+#     app.run(debug =True)
