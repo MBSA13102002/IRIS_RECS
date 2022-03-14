@@ -1,0 +1,261 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Material Design Template</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  </head>
+  <style>
+      
+body {
+    background-color: #e0f2f1;
+  }
+  
+  form p {
+    font-size: 120%;
+  }
+  
+  .ctrlqHeaderMast {
+    height: 278px;
+    background: #009688;
+  }
+  
+  .ctrlqFormContent {
+    color: rgba(0,0,0,.87);
+    padding: 20px 35px
+  }
+  
+  .ctrlqFormContentWrapper {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+    -webkit-flex-direction: column;
+    flex-direction: column
+  }
+  
+  .ctrlqAccent {
+    background-color: #a7ffeb;
+    height: 8px;
+  }
+  .ctrlqCenteredContent {
+    margin: auto;
+    width: 600px; 
+  }
+  .ctrlqFormCard {
+    background-color: #fff;
+    margin-bottom: 48px;
+    -webkit-box-shadow: 0 1px 4px 0 rgba(0,0,0,0.37);
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.37);
+    word-wrap: break-word
+  }
+  
+  .ctrlqFormCard:first-of-type {
+    margin-top: -100px
+  }
+  
+  .ctrlqHeaderTitle {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    font-size: 34px;
+    line-height: 135%;
+    max-width: 100%;
+    min-width: 0%;
+    margin-bottom: 22px
+  }
+  
+  @media (max-width: 660px) {
+    .ctrlqHeaderMast {
+      height: 122px;
+    }
+    .ctrlqFormCard:first-of-type {
+      margin-top: -50px;
+    }
+  
+    .ctrlqCenteredContent {
+      width: 90%;
+    }
+  }
+  
+  div.error {
+    position: relative;
+    top: -1rem;
+    left: 0rem;
+    font-size: 0.8rem;
+    color: #FF4081;
+    -webkit-transform: translateY(0%);
+    -ms-transform: translateY(0%);
+    -o-transform: translateY(0%);
+    transform: translateY(0%);
+  }
+  
+  </style>
+  <body>
+    {% macro catch(on_exception) %}
+    {{ handle_catch(caller, on_exception) }}
+    {% endmacro %}
+    <div class="ctrlqFormContentWrapper">
+      <div class="ctrlqHeaderMast"></div>
+      <div class="ctrlqCenteredContent">
+        <div class="ctrlqFormCard">
+          <div class="ctrlqAccent"></div>
+          <div class="ctrlqFormContent">
+              <div class="row">
+                <div class="input-field col s12">
+                  <h2>{{form_data['form_title']}}</h2>
+                  <p>All fields are required *</p>
+                </div>
+              </div>
+            {% if form_data['accepting_response'] == 1 %}
+            <form action="{{callback_url}}" method="post">
+                {% call catch('') %}
+                {% for key,val in form_data['data'].items()%}
+                {% if val != "timestamp" %}
+
+                {% if val['type'] == "text" %}
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input name="{{key}}" type="text" class="validate" data-error="#e1" required>
+                    <label for="name">{{val['text']}}</label>
+                    <div id="e1"></div>
+                  </div>
+                </div>
+                {% else%}
+
+              <div class="row">
+
+                <label for="name" style="font-size:15px">{{val['text']}}</label>
+                <select name="" id="{{key_}}_select" class="form-control">
+                 
+                {% for key_opt,opt in val['options'].items()%}
+                <option value="{{key_opt}}">{{opt}}</option>
+                {% endfor %}
+              </select>
+     
+
+              </div>
+
+              <!-- <div class="row">
+                <div class="input-field col s12">
+                  <select id="gender" name="gender" class="validate" data-error="#e3" required>           
+                    <option value="" disabled selected>Choose Gender</option>
+                    <option value="Male">Male</option> 
+                    <option value="Female">Female</option>
+                  </select>
+                  <div id="e3"></div>
+                </div>
+              </div> -->
+<!-- 
+              <div class="row">
+                <div class="input-field col s12">
+                  <p for="color">Favorite Color</p>
+                  <div>
+                    <input name="color" type="radio" id="color_red" value="Red" data-error="#e4" required>
+                    <label for="color_red">Red</label>
+                  </div>
+                  <p>
+                    <input name="color" type="radio" id="color_green" value="Green">
+                    <label for="color_green">Green</label>
+                  </p>
+                  <p> 
+                    <input name="color" type="radio" id="color_blue" value="Blue">
+                    <label for="color_blue">Blue</label>
+                  </p>
+                  <div class="input-field">
+                    <br>
+                    <div id="e4"></div>
+                  </div>
+                </div>
+              </div> -->
+
+
+
+   
+
+              <!-- <div class="row">
+                <div class="input-field col s12">
+                  <p for="food_select">Favorite Food</p>
+                  <p>
+                    <input type="checkbox" name="food" id="food_asian" data-error="#e7" required>
+                    <label for="food_asian">Asian</label>
+                  </p>
+                  <p>
+                    <input type="checkbox" name="food" id="food_french">
+                    <label for="food_french">French</label>
+                  </p>
+                  <p> 
+                    <input type="checkbox" name="food" id="food_japanese"> 
+                    <label for="food_japanese">Japanese</label> 
+                  </p>
+                  <div class="input-field">
+                    <br><div id="e7"></div>
+                  </div>
+                </div>
+              </div> -->
+
+              <!-- <div class="row">
+                <div class="file-field input-field col s12">
+                  <div class="btn">
+                    <span>Browse</span>
+                    <input type="file" data-error="#e9" required>
+                  </div>
+                  <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text" placeholder="Select a file to upload">
+                  </div>
+                  <div class="input-field">
+                    <div id="e9"></div>
+                  </div>
+                </div>
+              </div>
+               -->
+              <!-- <div class="row">
+                <div class="file-field input-field col s12">
+                  <div class="btn">
+                    <span>Browse</span>
+                    <input type="file" data-error="#e8" required>
+                  </div>
+                  <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text" placeholder="Select a file to upload">
+                  </div>
+                  <div class="input-field">
+                    <div id="e8"></div>
+                  </div>
+                </div>
+              </div> -->
+              {% endif %}
+              {% endif %}
+              {% endfor %}
+              {% endcall %}
+              
+              <div class="row">
+                <div class="input-field col m6 s12">
+                  <button type="submit" class="waves-effect waves-light btn-large"><i class="material-icons right">backup</i>Submit</button>
+                </div>
+              </div>
+
+            </form>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+   
+<script>
+    
+</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.0/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.0/additional-methods.min.js"></script>
+
+  </body>
+
+  </html>
