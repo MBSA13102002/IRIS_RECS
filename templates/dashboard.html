@@ -10,9 +10,16 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link href='https://fonts.googleapis.com/css?family=Sofia|ABeeZee|Amaranth' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js" integrity="sha256-WVsM3xrcqyuFNF3W1qtIKbHFsD0977nDQA8DCMp1zCw=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js" integrity="sha256-2/3R3NV5zryj0fDjD3cDh+SNiWQ/TJiMVZzAo5FrhiU=" crossorigin="anonymous"></script>
   <title>Admin Panel</title>
 </head>
 <style>
+  html{
+    font-family: Amaranth;
+  }
   body{
     background-color: #d3d7e7;
 }
@@ -27,105 +34,579 @@
     border-radius: 17px;
     box-shadow: -2px -2px 5px #d7d9e0, 2px 2px 5px #6f768f;
   }
+  .input-group-select{
+
+    display: flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: center;
+    white-space: nowrap;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+  
+      
+  }
 </style>
 <body>
   {% macro catch(on_exception) %}
   {{ handle_catch(caller, on_exception) }}
   {% endmacro %}
   <div>
-    <h1 class="text-center" style="font-family:Amaranth ;">🤷‍♂️ M.B.S.A. Forms 🤷‍♂️</h1>
+    <h1 class="text-center" style="font-family:Amaranth ;">{{form_data['form_title']}}</h1>
     <!-- Button trigger modal -->
-    <div class="row">
+    <div class="row my-4">
       <div class="col">
-        <button type="button" class="btn btn-primary mx-3 contri_btn fnt" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          CREATE NEW FORM
+        <button type="button" class="btn btn-info mx-2 contri_btn fnt" data-bs-toggle="modal" data-bs-target="#Add_Field_Modal" >
+          CREATE NEW FIELD
+        </button>
+      
+        <a type="button" class="btn btn-info mx-2 contri_btn fnt" href="/">
+          BACK
+        </a>
+
+        <button type="button" class="btn btn-info mx-2 contri_btn fnt" style = "float:right" onclick="Save()">
+          SAVE<i class="fa fa-cloud-download mx-2"></i>
+        </button>
+       
+        <button type="button" class="btn btn-info mx-2 contri_btn fnt " style = "float:right" data-bs-toggle="modal" data-bs-target="#Details_Modal">
+          DETAILS
         </button>
       </div>
-      <div class="col">
-        <input id="search_chapter" class="form-control me-2 mx-2 contri fnt" type="search" placeholder="Search" aria-label="Search"
-          style="width: 40%;float:right">
+
+
+      <div class="offcanvas offcanvas-start" tabindex="-1" id="Responses_Modal" aria-labelledby="offcanvasExampleLabel" style="width:100%">
+        <div class="offcanvas-header">
+          <h4 class="offcanvas-title" id="offcanvasExampleLabel">Responses</h4>
+          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <div>
+            {% call catch('') %}
+            {% for key,val in form_data['responses'].items()%}
+            <table class="table table-bordered border-info">
+              <thead>
+                <tr>
+                  {% for _key,_val in val.items()%}
+                  <th scope="col">{{_val["key"]}}</th>
+                  {% endfor %}
+                  
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  {% for _key,_val in val.items()%}
+                  <th >{{_val["resp"]}}</th>
+                  {% endfor %}
+                
+               
+                </tr>
+                
+                
+              </tbody>
+            </table>
+            {% endfor %}
+            {% endcall %}
+          </div>
+
+          <!-- <div class="dropdown mt-3">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+              Dropdown button
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+          </div> -->
+        </div>
       </div>
 
-    </div>
 
-    <!-- Modal -->
-    <div class="modal fade contri" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title fnt" id="exampleModalLabel">Add New Form</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form action="/new-form" method="POST">
-              <div class="mb-1">
-                <label for="formGroupExampleInput" class="form-label fnt">Form Title</label>
-                <input type="text" class="form-control contri" id="form_title" name="form_title"
-                  placeholder="Form Title" required>
+      <div class="modal fade" id="Settings_Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Form Settings</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="form-check form-switch">
+                {% if form_data['accepting_response']==0 %}
+                <input class="form-check-input" type="checkbox" role="switch" id="form_accepting_response" >
+                {% else %}
+                <input class="form-check-input" type="checkbox" role="switch" id="form_accepting_response" checked >
+                {% endif %}
+                <label class="form-check-label" for="flexSwitchCheckChecked">Accepting Responses</label>
               </div>
+            </div>
+            <div class="modal-footer">
+              <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-info">Save changes</button> -->
+            </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary contri_btn" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary contri_btn">Create Form</button>
-          </div>
-          </form>
         </div>
+      </div>
+
+
+      <div class="modal fade" id="Add_Field_Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Add New Field</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="text_field" checked>
+                <label class="form-check-label" for="flexRadioDefault1">
+                  Text Field
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="select_field" >
+                <label class="form-check-label" for="flexRadioDefault2">
+                  Select
+                </label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-info" onclick="Add_Field()">Add Field</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+
+  <div class="modal fade" id="Details_Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Form Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label">Public URL</label>
+          <input type="text" class="form-control" id="public_url_form"  disabled>
+          <button class="btn-sm btn-info contri_btn fnt my-1" style="float:right" onclick="Copy_Clip()">Copy Link</button>
+
+        </div>
+    
+      <div class="row my-5">
+        <div class="col">
+          <div class="row">
+
+            <button type="button" class="btn btn-info contri_btn fnt my-2" data-bs-toggle="modal" data-bs-target="#Settings_Modal" data-bs-dismiss="modal">
+              SETTINGS
+             </button>
+          </div>
+          <div class="row">
+
+            <button type="button" class="btn btn-info contri_btn fnt px-4 my-2"  data-bs-toggle="offcanvas" data-bs-target="#Responses_Modal" data-bs-dismiss="modal">
+             RESPONSES
+            </button>
+          </div>
+        </div>
+      </div>
+        
+      </div>
+      <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-info">Save changes</button> -->
       </div>
     </div>
   </div>
-  <div class="row">
+</div>
+
+    </div>
+  <div class="container" id="main_form">
     {% call catch('') %}
-   {% for key,val in forms.items()%}
+    {% for key,val in form_data['data'].items()%}
+    {% if val != "timestamp" %}
+    {% if val['type'] == 'text'%}
+    <div class="input-group my-2" id="{{key}}">
+        <input class="input-group-text mx-2" value="{{val['text']}}">
+        <input type="text"  class="form-control" disabled>
+        <i class="fa fa-times-circle mx-1" style="font-size:35px;cursor:pointer" onclick = "Remove_Field('{{key}}')"></i>
+
+      </div>
+      {% else %}
 
 
-   <div class="card m-3 mx-4 contri" style="width: 13rem;">
-     <div class="card-body">
+
+
+
+      <div class="input-group my-2" id="{{key}}">
+        <input class="input-group-text mx-2" value="{{val['text']}}">
+        <select name="" id="{{key_}}_select" class="form-control">
+            <option value="Options" default> Option List</option>
+          {% for key_opt,opt in val['options'].items()%}
+          <option value="{{key_opt}}">{{opt}}</option>
+          {% endfor %}
+        </select>
+        <i class="fa fa-plus-circle mx-1" style="font-size:35px;cursor:pointer" data-bs-toggle="modal" data-bs-target="#Options_Modal"></i>
+        <i class="fa fa-times-circle mx-1" style="font-size:35px;cursor:pointer" onclick = "Remove_Field('{{key_}}')"></i>
+
+      </div>
+
+
+
+      <div class="modal fade" id="Options_Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Form Settings</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Option</label>
+                <input type="text" class="form-control" id="option_add" placeholder="Write option">
+              </div>
+              <div class="row">
+                <div class="col" id="all_options">
+                  
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary"  onclick = "Add_Option('{{key_}}')">Add Option</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
+      {% endif %}
+      {% endif %}
+      {% endfor %}
+      {% endcall %}
+
+
+
+
+      <!-- <div class="input-group my-2" id="{{key_}}">
+        <input class="input-group-text mx-2" value="{{val}}">
+        <select name="" id="{{key_}}_select" class="form-control">
  
-           <h5 class="card-title fnt" style="text-align:center">{{val['form_title']}}</h5>
-            <center>
+        </select>
+        <i class="fa fa-plus-circle mx-1" style="font-size:35px;cursor:pointer" data-bs-toggle="modal" data-bs-target="#Options_Modal"></i>
+        <i class="fa fa-times-circle mx-1" style="font-size:35px;cursor:pointer" onclick = "Remove_Field('{{key_}}')"></i>
 
-                <a type="button" href='/edit/{{key}}' class="btn btn-primary card-link contri_btn fnt" style="width:100%">Edit Form</a><br>
-                <a  type="button" onclick="confirmation(this)"
-                  class="btn btn-danger card-link my-2 contri_btn fnt" style="width:100%">Delete Form</a>
-            </center>
+      </div>
+
+
+
+      <div class="modal fade" id="Options_Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Form Settings</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Option</label>
+                <input type="text" class="form-control" id="option_add" placeholder="Write option">
+              </div>
+              <div class="row">
+                <div class="col" id="all_options">
+                  
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary"  onclick = "Add_Option('{{key_}}')">Add Option</button>
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+
+
+
+
+  </div>
+    </div>
+
+    <!-- Modal -->
+
+  
+    <script>
+   
+      var main_json = "{{form_data['data']}}"
+      var all_json_unparsed = decodeHtml(main_json.slice(1,main_json.length-1))
+       all_json_unparsed = "{"+all_json_unparsed+"}"
+       all_json_parsed = JSON.parse(all_json_unparsed.replaceAll("'", '"'))
+
+      var data
+       = {
+      
+      }
+      data = all_json_parsed
+
+      all_input_group_text = document.getElementsByClassName("input-group-text")
+        if(all_input_group_text.length!=0){
+          for(let i=0;i<all_input_group_text.length;i++){
+            let temp_elem =all_input_group_text[i]
+            temp_elem.addEventListener("input",function(){
+             
+               let parent_id  = temp_elem.parentElement.id
+               data[parent_id]['text'] = temp_elem.value
+             
+               temp_elem.setAttribute("value",temp_elem.value)
+            })
+          }
+        }
+
+        all_input_group_select = document.getElementsByClassName("input-group-select")
+        if(all_input_group_select.length!=0){
+          for(let i=0;i<all_input_group_select.length;i++){
+            let temp_elem =all_input_group_select[i]
+            temp_elem.addEventListener("input",function(){
+             
+               let parent_id  = temp_elem.parentElement.id
+               data[parent_id]['text'] = temp_elem.value
+             
+               temp_elem.setAttribute("value",temp_elem.value)
+            })
+          }
+        }
+    
+     
+
+
+      function Add_Field() {
+      if(document.getElementById("text_field").checked){
+
+        let uid_field =makeid(7)
+      let container = document.getElementById("main_form")
+      container.innerHTML+=` <div class="input-group my-2" id="${uid_field}">
+        <input class="input-group-text mx-2">
+          <input type="text"  class="form-control" disabled>
+          <i class="fa fa-times-circle  mx-1" style="font-size:35px;cursor:pointer" onclick = "Remove_Field('${uid_field}')"></i>
+  
+      </div> 
+        
+        `
+        data[uid_field] = {
+
+        }
+        data[uid_field]['type'] = "text"
+
+        all_input_group_text = document.getElementsByClassName("input-group-text")
+        if(all_input_group_text.length!=0){
+          for(let i=0;i<all_input_group_text.length;i++){
+            let temp_elem =all_input_group_text[i]
+            temp_elem.addEventListener("input",function(){
+          
+               let parent_id  = temp_elem.parentElement.id
+               data[parent_id]['text'] = temp_elem.value
+             
+               temp_elem.setAttribute("value",temp_elem.value)
+            })
+          }
+        }
+         
+      }
+        else{
+        
+
+          let uid_field =makeid(7)
+          let container = document.getElementById("main_form")
+          container.innerHTML+=`    <div class="input-group my-2" id="${uid_field}">
+            <input class="input-group-select mx-2" >
+            <select name="" id="${uid_field}_select" class="form-control">
+             <option value="Options" default> Option List</option>
+            </select>
+            <i class="fa fa-plus-circle mx-1" style="font-size:35px;cursor:pointer" data-bs-toggle="modal" data-bs-target="#Options_Modal_${uid_field}"></i>
+            <i class="fa fa-times-circle mx-1" style="font-size:35px;cursor:pointer" onclick = "Remove_Field('${uid_field}')"></i>
+    
+          </div>
+          
+          
+          <div class="modal fade" id="Options_Modal_${uid_field}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Form Settings</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Option</label>
+                    <input type="text" class="form-control" id="${uid_field}_option_add" placeholder="Write option">
+                  </div>
+                  <div class="row">
+                    <div class="col" id="${uid_field}_all_options">
+                      
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary"  onclick = "Add_Option('${uid_field}')">Add Option</button>
+                </div>
+              </div>
+            </div>
+          </div>
+    `
+    data[uid_field] = {
+
+    }
+    data[uid_field]['type'] = "select"
+    data[uid_field]['options'] = {
+
+    }
+
+    all_input_group_select = document.getElementsByClassName("input-group-select")
+    if(all_input_group_select.length!=0){
+      for(let i=0;i<all_input_group_select.length;i++){
+        let temp_elem =all_input_group_select[i]
+        temp_elem.addEventListener("input",function(){
+         
+           let parent_id  = temp_elem.parentElement.id
+           data[parent_id]['text'] = temp_elem.value
+         
+           temp_elem.setAttribute("value",temp_elem.value)
+        })
+      }
+    }
+
+
+        }
+
+
+
+      }
+      function Remove_Field(id){
+            document.getElementById(id).remove()
+            delete data[id]
+      }
+   
+      function Save(){
+        let param = JSON.stringify(data)
+        $.ajax({
+          url: "{{form_data['callback_url']}}",
+          type:'POST',
+          data:{
+            "main":param
+          },
+        }).done(function(data) {
+            alert("Form Saved")
+        }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+            console.log(XMLHttpRequest);
+            alert("error");
+        })
+      }
+      function decodeHtml(html) {
+        var txt = document.createElement("textarea");
+        txt.innerHTML = html;
+        return txt.value;
+    }
+      function makeid(length) {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+          result += characters.charAt(Math.floor(Math.random() * 
+     charactersLength));
+       }
+       return result;
+    }
+    function Copy_Clip(){
+      var copyText = document.getElementById("public_url_form");
+
+      /* Select the text field */
+      copyText.select();
+      copyText.setSelectionRange(0, 99999); /* For mobile devices */
+    
+       /* Copy the text inside the text field */
+      navigator.clipboard.writeText(copyText.value);
+    
+      /* Alert the copied text */
+      alert("Link Copied!!");
+    }
+    document.getElementById("public_url_form").value = window.location.origin+"{{form_data['public_url']}}"
+    document.getElementById("form_accepting_response").addEventListener('change',function(e){
+        if(this.checked){
+          $.ajax({
+            url: "{{form_data['callback_url']}}"+"/change-resp-code",
+            type:'POST',
+            data:{
+              'resp_code':1
+            }
+          }).done(function(data) {
+             
+          }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+              console.log(XMLHttpRequest);
+              alert("error");
+          })
+        }
+        else{
+          $.ajax({
+            url: "{{form_data['callback_url']}}"+"/change-resp-code",
+            type:'POST',
+            data:{
+              'resp_code':0
+            }
+          }).done(function(data) {
+       
+          }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+              console.log(XMLHttpRequest);
+              alert("error");
+          })
+        }
+    })
    
 
-     </div>
-   </div>
-   {% endfor %}
-   {% endcall %}
+    function Add_Option(id){
+      let opt_id = makeid(7)
+      let text = document.getElementById(id+"_option_add").value
+      document.getElementById(id+"_all_options").innerHTML += `
+      <span class="badge rounded-pill bg-primary" style="font-size:15px" id="${opt_id}" >${text} <i class="fa fa-times-circle  mx-1" style="cursor:pointer" onclick = "Remove_Option('${id}','${opt_id}')"></i></span>
+      `
+      document.getElementById(id+"_option_add").value = ""
+      let x = document.getElementById(id+"_select");
+      let option = document.createElement("option");
+      option.text = text
+      option.value = opt_id
+      x.add(option);
 
+      data[id]['options'][opt_id] = text
 
-    <script>
-      function confirmation(element) {
-        result = confirm("Are you sure to delete this Chapter from the records?")
-        if (result == true) {
-          window.location.href = window.location.href + `delete/chapter/${element.id}`
-
-
-        }
-        else {
-
+     
+    }
+    function Remove_Option(id,opt_id){
+      document.getElementById(opt_id).remove()
+      let x = document.getElementById(id+"_select");
+      for(let i=0;i<x.length;i++){
+        if(x[i].value == opt_id){
+          x.remove(i)
+          delete data[id]['options'][opt_id]
         }
       }
-    </script>
-    <script>
-      document.getElementById("search_chapter").addEventListener('input', function () {
-        data = document.getElementById("search_chapter").value.toLowerCase()
-        card_titles = document.getElementsByClassName("card-title")
-        card = document.getElementsByClassName("card")
-        for (var i = 0; i < card_titles.length; i++) {
-          title = card_titles[i].innerHTML.toLowerCase()
-          if (title.includes(data)) {
-            card[i].style.display = "block"
-          }
-          else {
-            card[i].style.display = "none"
-          }
-        }
 
-
-      })
+    }
     </script>
   </div>
 
