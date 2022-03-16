@@ -45,7 +45,7 @@ def index():
         try:
             user_ = auth.sign_in_with_email_and_password(uname ,upass)
             try:
-                all_forms = db.child("Forms").child(request.cookies.get("__user__")).get().val()
+                all_forms = db.child("Forms").child(user_['localId']).get().val()
             except:
                 all_forms  = {}
             resp = make_response(render_template("dashboard.html",forms = all_forms,handle_catch = handle_catch))
