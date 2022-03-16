@@ -73,6 +73,9 @@
           SAVE<i class="fa fa-cloud-download mx-2"></i>
         </button>
        
+        <button type="button" class="btn btn-info mx-2 contri_btn fnt " style = "float:right" data-bs-toggle="modal" data-bs-target="#Properties_Modal">
+          PROPS
+        </button>
         <button type="button" class="btn btn-info mx-2 contri_btn fnt " style = "float:right" data-bs-toggle="modal" data-bs-target="#Details_Modal">
           DETAILS
         </button>
@@ -136,12 +139,24 @@
             </div>
             <div class="modal-body">
               <div class="form-check form-switch">
-                {% if form_data['accepting_response']==0 %}
+                {% if form_data['accepting_response']== 0 %}
                 <input class="form-check-input" type="checkbox" role="switch" id="form_accepting_response" >
                 {% else %}
                 <input class="form-check-input" type="checkbox" role="switch" id="form_accepting_response" checked >
                 {% endif %}
                 <label class="form-check-label" for="flexSwitchCheckChecked">Accepting Responses</label>
+  
+
+              </div>
+              <div class="form-check form-switch">
+                {% if form_data['admin_notify_new_responses']== 0 %}
+                <input class="form-check-input" type="checkbox" role="switch" id="form_admin_notify_new_responses" >
+                {% else %}
+                <input class="form-check-input" type="checkbox" role="switch" id="form_admin_notify_new_responses" checked >
+                {% endif %}
+                <label class="form-check-label" for="">Notify me for new responses</label>
+  
+
               </div>
             </div>
             <div class="modal-footer">
@@ -151,6 +166,57 @@
           </div>
         </div>
       </div>
+
+
+      <div class="modal fade" id="Properties_Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Properties of Fields!!</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row " id="Properties_Fields">
+                {% call catch('') %}
+                {% for key,val in form_data['data'].items()%}
+                {% if val!="timestamp" %}
+                {% if val['required'] == "true" %}
+                <div class="col-auto">
+                  <input type="text" class="form-control" id="inputPassword2" value="{{val['text']}}" disabled>
+                </div>
+                <div class="col-auto">
+                  
+                  <div class="form-check form-switch my-2">
+                    <input class="form-check-input required_checkboxes_fields" type="checkbox" role="switch" id="Required_{{key}}" checked>
+                    <label class="form-check-label" for="flexSwitchCheckChecked">Required</label>
+                  </div>
+                </div>
+                {% else %}
+                <div class="col-auto">
+                  <input type="text" class="form-control" id="inputPassword2" value="{{val['text']}}" disabled>
+                </div>
+                <div class="col-auto">
+                  
+                  <div class="form-check form-switch my-2">
+                    <input class="form-check-input required_checkboxes_fields" type="checkbox" role="switch" id="Required_{{key}}" >
+                    <label class="form-check-label" for="flexSwitchCheckChecked">Required</label>
+                  </div>
+                </div>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+                {% endcall %}
+               
+              </div>
+            </div>
+            <div class="modal-footer">
+              <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-info">Save changes</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
 
 
       <div class="modal fade" id="Add_Field_Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -165,6 +231,12 @@
                 <input class="form-check-input" type="radio" name="flexRadioDefault" id="text_field" checked>
                 <label class="form-check-label" for="flexRadioDefault1">
                   Text Field
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="email_field" >
+                <label class="form-check-label" for="flexRadioDefault1">
+                  Email Field
                 </label>
               </div>
               <div class="form-check">
@@ -195,10 +267,18 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="mb-3">
+        <div class="mb-3" id="Details_Modal_Body">
           <label for="exampleFormControlInput1" class="form-label">Public URL</label>
-          <input type="text" class="form-control" id="public_url_form"  disabled>
           <button class="btn-sm btn-info contri_btn fnt my-1" style="float:right" onclick="Copy_Clip()">Copy Link</button>
+          {% if not form_data['short-url']%}
+          <button class="btn-sm btn-info contri_btn fnt m-1" id="short-url-button" style="float:right" onclick="Shorten_Url()">Shorten Url</button>
+          {% endif %}
+          <input type="text" class="form-control" id="public_url_form"  disabled>
+          {% if form_data['short-url']%}
+          <label for="exampleFormControlInput1" class="form-label">Shortened URL</label>
+          <input type="text" class="form-control" id="shortened_public_url_form" value="{{form_data['short-url']}}" disabled>
+          {% endif %}
+  
 
         </div>
     
@@ -233,11 +313,16 @@
     {% call catch('') %}
     {% for key,val in form_data['data'].items()%}
     {% if val != "timestamp" %}
-    {% if val['type'] == 'text'%}
+    {% if val['type'] == 'text' or val['type'] == 'email'%}
     <div class="input-group my-2" id="{{key}}">
+      {% if val['type'] == 'email' %}
+        <input class="input-group-text mx-2" value="{{val['text']}}" disabled>
+        {% else %}
         <input class="input-group-text mx-2" value="{{val['text']}}">
+        {% endif %}
         <input type="text"  class="form-control" disabled>
         <i class="fa fa-times-circle mx-1" style="font-size:35px;cursor:pointer" onclick = "Remove_Field('{{key}}')"></i>
+
 
       </div>
       {% else %}
@@ -307,46 +392,11 @@
 
 
 
-      <!-- <div class="input-group my-2" id="{{key_}}">
-        <input class="input-group-text mx-2" value="{{val}}">
-        <select name="" id="{{key_}}_select" class="form-control">
- 
-        </select>
-        <i class="fa fa-plus-circle mx-1" style="font-size:35px;cursor:pointer" data-bs-toggle="modal" data-bs-target="#Options_Modal"></i>
-        <i class="fa fa-times-circle mx-1" style="font-size:35px;cursor:pointer" onclick = "Remove_Field('{{key_}}')"></i>
-
-      </div>
+    
 
 
 
-      <div class="modal fade" id="Options_Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Form Settings</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label">Option</label>
-                <input type="text" class="form-control" id="option_add" placeholder="Write option">
-              </div>
-              <div class="row">
-                <div class="col" id="all_options">
-                  
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary"  onclick = "Add_Option('{{key_}}')">Add Option</button>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
-
-
+    </div>
 
 
   </div>
@@ -404,6 +454,7 @@
 
         let uid_field =makeid(7)
       let container = document.getElementById("main_form")
+      let Properties_Fields = document.getElementById("Properties_Fields")
       container.innerHTML+=` <div class="input-group my-2" id="${uid_field}">
         <input class="input-group-text mx-2">
           <input type="text"  class="form-control" disabled>
@@ -412,10 +463,70 @@
       </div> 
         
         `
+        Properties_Fields.innerHTML+=`<div class="col-auto" id="div_props_${uid_field}">
+          <input type="text" class="form-control" id="props_${uid_field}" value="" disabled>
+        </div>
+        <div class="col-auto">
+          
+          <div class="form-check form-switch my-2" id="div_input_props_${uid_field}">
+            <input class="form-check-input required_checkboxes_fields" type="checkbox" role="switch" id="Required_${uid_field}">
+            <label class="form-check-label" for="flexSwitchCheckChecked">Required</label>
+          </div>
+        </div>
+        
+        `
         data[uid_field] = {
 
         }
         data[uid_field]['type'] = "text"
+
+        all_input_group_text = document.getElementsByClassName("input-group-text")
+        if(all_input_group_text.length!=0){
+          for(let i=0;i<all_input_group_text.length;i++){
+            let temp_elem =all_input_group_text[i]
+            temp_elem.addEventListener("input",function(){
+          
+               let parent_id  = temp_elem.parentElement.id
+               data[parent_id]['text'] = temp_elem.value
+               document.getElementById("props_"+parent_id).value = temp_elem.value
+             
+               temp_elem.setAttribute("value",temp_elem.value)
+            })
+          }
+        }
+         
+      }
+
+      else if(document.getElementById("email_field").checked){
+
+        let uid_field =makeid(7)
+      let container = document.getElementById("main_form")
+      let Properties_Fields = document.getElementById("Properties_Fields")
+      container.innerHTML+=` <div class="input-group my-2" id="${uid_field}">
+        <input class="input-group-text mx-2" value="Email" disabled>
+          <input type="email"  class="form-control" disabled>
+          <i class="fa fa-times-circle  mx-1" style="font-size:35px;cursor:pointer" onclick = "Remove_Field('${uid_field}')"></i>
+  
+      </div> 
+        
+        `
+        Properties_Fields.innerHTML+=`<div class="col-auto" id="div_props_${uid_field}">
+          <input type="text" class="form-control" id="props_${uid_field}" value="" disabled>
+        </div>
+        <div class="col-auto">
+          
+          <div class="form-check form-switch my-2" id="div_input_props_${uid_field}">
+            <input class="form-check-input required_checkboxes_fields" type="checkbox" role="switch" id="Required_${uid_field}">
+            <label class="form-check-label" for="flexSwitchCheckChecked">Required</label>
+          </div>
+        </div>
+        
+        `
+        data[uid_field] = {
+
+        }
+        data[uid_field]['type'] = "email"
+        data[uid_field]['text'] = "Email"
 
         all_input_group_text = document.getElementsByClassName("input-group-text")
         if(all_input_group_text.length!=0){
@@ -432,11 +543,13 @@
         }
          
       }
+
         else{
         
 
           let uid_field =makeid(7)
           let container = document.getElementById("main_form")
+          let Properties_Fields = document.getElementById("Properties_Fields")
           container.innerHTML+=`    <div class="input-group my-2" id="${uid_field}">
             <input class="input-group-select mx-2" >
             <select name="" id="${uid_field}_select" class="form-control">
@@ -474,6 +587,19 @@
             </div>
           </div>
     `
+    Properties_Fields.innerHTML+=`<div class="col-auto" id="div_props_${uid_field}">
+      <input type="text" class="form-control" id="props_${uid_field}" value="" disabled>
+    </div>
+    <div class="col-auto">
+      
+      <div class="form-check form-switch my-2" id="div_input_props_${uid_field}">
+        <input class="form-check-input required_checkboxes_fields" type="checkbox" role="switch" id="Required_${uid_field}">
+        <label class="form-check-label" for="flexSwitchCheckChecked">Required</label>
+      </div>
+    </div>
+    
+    `
+
     data[uid_field] = {
 
     }
@@ -504,6 +630,8 @@
       }
       function Remove_Field(id){
             document.getElementById(id).remove()
+            document.getElementById("div_props_"+id).remove()
+            document.getElementById("div_input_props_"+id).remove()
             delete data[id]
       }
    
@@ -551,13 +679,15 @@
       alert("Link Copied!!");
     }
     document.getElementById("public_url_form").value = window.location.origin+"{{form_data['public_url']}}"
+    document.getElementById("public_url_form").setAttribute("value", window.location.origin+"{{form_data['public_url']}}")
     document.getElementById("form_accepting_response").addEventListener('change',function(e){
         if(this.checked){
           $.ajax({
             url: "{{form_data['callback_url']}}"+"/change-resp-code",
             type:'POST',
             data:{
-              'resp_code':1
+              'resp_code':1,
+              'name':0
             }
           }).done(function(data) {
              
@@ -571,7 +701,8 @@
             url: "{{form_data['callback_url']}}"+"/change-resp-code",
             type:'POST',
             data:{
-              'resp_code':0
+              'resp_code':0,
+              'name':0
             }
           }).done(function(data) {
        
@@ -581,7 +712,56 @@
           })
         }
     })
+
+    document.getElementById("form_admin_notify_new_responses").addEventListener('change',function(e){
+        if(this.checked){
+          $.ajax({
+            url: "{{form_data['callback_url']}}"+"/change-resp-code",
+            type:'POST',
+            data:{
+              'resp_code':1,
+              'name':1
+            }
+          }).done(function(data) {
+             
+          }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+              console.log(XMLHttpRequest);
+              alert("error");
+          })
+        }
+        else{
+          $.ajax({
+            url: "{{form_data['callback_url']}}"+"/change-resp-code",
+            type:'POST',
+            data:{
+              'resp_code':0,
+              'name':1
+            }
+          }).done(function(data) {
+       
+          }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+              console.log(XMLHttpRequest);
+              alert("error");
+          })
+        }
+    })
+
    
+   all_required_checkboxes = document.getElementsByClassName("required_checkboxes_fields")
+   for(let i =0;i<all_required_checkboxes.length;i++){
+    all_required_checkboxes[i].addEventListener('change',function(e){
+      if(this.checked){
+           let temp_id = this.id.split('_')[1]
+           data[temp_id]['required'] = "true"
+      }
+      else{
+        let temp_id = this.id.split('_')[1]
+        data[temp_id]['required'] = "false"
+      }
+    })
+   }
+  
+
 
     function Add_Option(id){
       let opt_id = makeid(7)
@@ -610,6 +790,25 @@
         }
       }
 
+    }
+    function Shorten_Url(){
+      public_url_form = document.getElementById("public_url_form").value
+      $.ajax({
+        url: "{{form_data['callback_url']}}"+"/shorten-url",
+        type:'POST',
+        data:{
+          'public_url_form':public_url_form
+        }
+       
+      }).done(function(data) {
+        document.getElementById("Details_Modal_Body").innerHTML+=`<label for="exampleFormControlInput1" class="form-label">Shortened URL</label>
+        <input type="text" class="form-control" id="shortened_public_url_form" value="${data}"  disabled>`
+        document.getElementById("short-url-button").remove()
+   
+      }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+          console.log(XMLHttpRequest);
+          alert("Can't reach servers! Try Again Later!!!");
+      })
     }
     </script>
   </div>

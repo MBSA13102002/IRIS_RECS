@@ -110,7 +110,7 @@ body {
               <div class="row">
                 <div class="input-field col s12">
                   <h2>{{form_data['form_title']}}</h2>
-                  <p>All fields are required *</p>
+                  <!-- <p>All fields are required *</p> -->
                 </div>
               </div>
             <form action="{{callback_url}}" method="post">
@@ -118,20 +118,44 @@ body {
                 {% for key,val in form_data['data'].items()%}
                 {% if val != "timestamp" %}
 
-                {% if val['type'] == "text" %}
+                {% if val['type'] == "text" or val['type'] == "email" %}
+                 {% if val['required']=="true" %}
                 <div class="row">
                   <div class="input-field col s12">
-                    <input name="{{key}}" type="text" class="validate" data-error="#e1" required>
+                    <input name="{{key}}" type="{{val['type']}}" class="validate" data-error="#e1" required>
+                    <label for="name">{{val['text']}} <span style="color:red">*</span></label>
+                    <div id="e1"></div>
+                  </div>
+                </div>
+                {% else %}
+                
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input name="{{key}}" type="{{val['type']}}" class="validate" data-error="#e1" >
                     <label for="name">{{val['text']}}</label>
                     <div id="e1"></div>
                   </div>
                 </div>
+                {% endif %}
                 {% else%}
+                {% if val['required']=="true" %}
+              <div class="row">
 
+                <label for="name" style="font-size:15px">{{val['text']}}<span style="color:red">*</span></label>
+                <select name="{{key}}" id="{{key_}}_select" class="form-control" required> 
+                 
+                {% for key_opt,opt in val['options'].items()%}
+                <option value="{{opt}}">{{opt}}</option>
+                {% endfor %}
+              </select>
+     
+
+              </div>
+              {% else %}
               <div class="row">
 
                 <label for="name" style="font-size:15px">{{val['text']}}</label>
-                <select name="{{key}}" id="{{key_}}_select" class="form-control">
+                <select name="{{key}}" id="{{key_}}_select" class="form-control"> 
                  
                 {% for key_opt,opt in val['options'].items()%}
                 <option value="{{opt}}">{{opt}}</option>
@@ -141,93 +165,7 @@ body {
 
               </div>
 
-              <!-- <div class="row">
-                <div class="input-field col s12">
-                  <select id="gender" name="gender" class="validate" data-error="#e3" required>           
-                    <option value="" disabled selected>Choose Gender</option>
-                    <option value="Male">Male</option> 
-                    <option value="Female">Female</option>
-                  </select>
-                  <div id="e3"></div>
-                </div>
-              </div> -->
-<!-- 
-              <div class="row">
-                <div class="input-field col s12">
-                  <p for="color">Favorite Color</p>
-                  <div>
-                    <input name="color" type="radio" id="color_red" value="Red" data-error="#e4" required>
-                    <label for="color_red">Red</label>
-                  </div>
-                  <p>
-                    <input name="color" type="radio" id="color_green" value="Green">
-                    <label for="color_green">Green</label>
-                  </p>
-                  <p> 
-                    <input name="color" type="radio" id="color_blue" value="Blue">
-                    <label for="color_blue">Blue</label>
-                  </p>
-                  <div class="input-field">
-                    <br>
-                    <div id="e4"></div>
-                  </div>
-                </div>
-              </div> -->
-
-
-
-   
-
-              <!-- <div class="row">
-                <div class="input-field col s12">
-                  <p for="food_select">Favorite Food</p>
-                  <p>
-                    <input type="checkbox" name="food" id="food_asian" data-error="#e7" required>
-                    <label for="food_asian">Asian</label>
-                  </p>
-                  <p>
-                    <input type="checkbox" name="food" id="food_french">
-                    <label for="food_french">French</label>
-                  </p>
-                  <p> 
-                    <input type="checkbox" name="food" id="food_japanese"> 
-                    <label for="food_japanese">Japanese</label> 
-                  </p>
-                  <div class="input-field">
-                    <br><div id="e7"></div>
-                  </div>
-                </div>
-              </div> -->
-
-              <!-- <div class="row">
-                <div class="file-field input-field col s12">
-                  <div class="btn">
-                    <span>Browse</span>
-                    <input type="file" data-error="#e9" required>
-                  </div>
-                  <div class="file-path-wrapper">
-                    <input class="file-path validate" type="text" placeholder="Select a file to upload">
-                  </div>
-                  <div class="input-field">
-                    <div id="e9"></div>
-                  </div>
-                </div>
-              </div>
-               -->
-              <!-- <div class="row">
-                <div class="file-field input-field col s12">
-                  <div class="btn">
-                    <span>Browse</span>
-                    <input type="file" data-error="#e8" required>
-                  </div>
-                  <div class="file-path-wrapper">
-                    <input class="file-path validate" type="text" placeholder="Select a file to upload">
-                  </div>
-                  <div class="input-field">
-                    <div id="e8"></div>
-                  </div>
-                </div>
-              </div> -->
+              {% endif %}
               {% endif %}
               {% endif %}
               {% endfor %}
@@ -258,6 +196,12 @@ body {
                 </div>
             {% endif %}
            
+
+      <div class="ctrlqFormContent">
+        <div class="row">
+    
+          <p class="text-center">Powered by <a href="https://iris-recs-mbsaiaditya.herokuapp.com/" target="_blank">MBSA FORMS</a> </p>
+        </div>
 
           </div>
         </div>
