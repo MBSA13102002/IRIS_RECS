@@ -1,8 +1,16 @@
-
 from flask import Flask,render_template,request,url_for,make_response,redirect
 from firebase import Firebase
 import json
 import datetime
+import requests
+
+#Url Shortening
+header = {
+    "Authorization":"bbf116bb1fea464e353f69668d1fedbffed3e885",
+    "Content-Type": "application/json"
+}
+url = 'https://api-ssl.bitly.com/v4/shorten'
+
 def handle_catch(caller, on_exception):
     try:
          return caller()
@@ -36,7 +44,11 @@ def index():
         upass = request.form.get("password")
         try:
             user_ = auth.sign_in_with_email_and_password(uname ,upass)
-            resp = make_response(render_template("dashboard.html",handle_catch = handle_catch))
+            try:
+                all_forms = db.child("Forms").child(request.cookies.get("__user__")).get().val()
+            except:
+                all_forms  = {}
+            resp = make_response(render_template("dashboard.html",forms = all_forms,handle_catch = handle_catch))
             resp.set_cookie('__user__', user_['localId'],max_age=60*60*24)
             resp.set_cookie('__email__', user_['email'],max_age=60*60*24)
             return resp
@@ -72,11 +84,18 @@ def open_form(variable_1):
 @app.route("/edit/<string:variable_1>/change-resp-code",methods=['GET','POST'])
 def change_resp_code_form(variable_1):
     if request.method == 'POST':
-        resp_code = dict(request.form)['resp_code']
-        db.child("Forms").child(request.cookies.get("__user__")).child(variable_1).update({
-            'accepting_response':int(resp_code)
-        })
-        return resp_code
+        if (dict(request.form)['name']=="0"):
+            resp_code = dict(request.form)['resp_code']
+            db.child("Forms").child(request.cookies.get("__user__")).child(variable_1).update({
+                'accepting_response':int(resp_code)
+            })
+            return resp_code
+        elif (dict(request.form)['name']=="1"):
+            resp_code = dict(request.form)['resp_code']
+            db.child("Forms").child(request.cookies.get("__user__")).child(variable_1).update({
+                'admin_notify_new_responses':int(resp_code)
+            })
+            return resp_code
 
 
 @app.route("/public/<string:variable_1>/<string:variable_2>",methods=['GET','POST'])
@@ -107,9 +126,9 @@ def public_form(variable_1,variable_2):
                 'resp':fmt_date
             }
             db.child("Forms").child(variable_1).child(variable_2).child("responses").push(push_dict)
-            return "Form Submitted Sucessfuly"
+            return render_template("form_submitted.html")
         else:
-            return "Form Not Accepting Responses"
+            return render_template("form_no_responses.html")
 
     form_data_public= db.child("Forms").child(variable_1).child(variable_2).get().val()
     callback_url = f"/public/{variable_1}/{variable_2}"
@@ -121,7 +140,8 @@ def new_form():
         form_title = request.form.get("form_title") 
         new_form = db.child("Forms").child(request.cookies.get("__user__")).push({
             "form_title":form_title,
-            "accepting_response":1
+            "accepting_response":1,
+            "admin_notify_new_responses":0
         })
         # return redirect(url_for('open_form',variable_1 = new_form['name']))
         return redirect(url_for('index'))
@@ -155,13 +175,37 @@ def passchange():
         return render_template("passwordchange.html",val = "true")
     return render_template("passwordchange.html",val = "false")
 
-@app.route("/test",methods=['GET'])
-def mnsa():
-    return render_template("main_form.html")
-@app.route("/data",methods=['GET','POST'])
-def mnsa_():
+@app.route("/form-delete/<string:form_id>",methods = ['GET','POST'])
+def delete(form_id):
     if request.method == 'POST':
-        print(dict(request.form))
-        return "0"
+        db.child("Forms").child(request.cookies.get("__user__")).child(form_id).remove()
+        return redirect(url_for('index'))
+
+
+@app.route("/edit/<string:variable_1>/shorten-url",methods = ['GET','POST'])
+def shorten_url(variable_1):
+    if request.method == "POST":
+        if request.method == 'POST' and request.cookies.get("__user__"):
+            # url_to_short = request.form['public_url_form']
+            # url = 'https://api-ssl.bitly.com/v4/shorten'
+            # myobj = {
+            #     "long_url": url_to_short
+            
+            
+            # }
+            # x = requests.post(url, json = myobj,headers=header)
+            # short_url = x.link
+            # db.child("Forms").child(request.cookies.get("__user__")).child(variable_1).update({
+            #      "short-url": short_url
+            # })
+            # return short_url
+            short_url = "Bhai Bhai"
+            db.child("Forms").child(request.cookies.get("__user__")).child(variable_1).update({
+                 "short-url": short_url
+            })
+            return short_url
+
+
+
 if __name__ == '__main__':
     app.run(debug =True)

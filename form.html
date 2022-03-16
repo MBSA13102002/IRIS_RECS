@@ -111,6 +111,7 @@ body {
         <div class="ctrlqFormCard">
           <div class="ctrlqAccent"></div>
      
+          {% if form_data['accepting_response'] == 1 %}
           <div class="ctrlqFormContent">
               <div class="row">
                 <div class="input-field col s12">
@@ -118,7 +119,6 @@ body {
                   <p>All fields are required *</p>
                 </div>
               </div>
-            {% if form_data['accepting_response'] == 1 %}
             <form action="{{callback_url}}" method="post">
                 {% call catch('') %}
                 {% for key,val in form_data['data'].items()%}
@@ -145,6 +145,14 @@ body {
               </div> -->
 
             </form>
+            {% else %}
+            <div class="ctrlqFormContent">
+              <div class="row">
+                <div class="input-field col s12">
+                  <h4>{{form_data['form_title']}}</h4>
+                  <p>This Form is not accepting Responses!!</p>
+                </div>
+              </div>
             {% endif %}
 
           </div>

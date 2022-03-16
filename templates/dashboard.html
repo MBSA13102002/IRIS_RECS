@@ -85,8 +85,10 @@
             <center>
 
                 <a type="button" href='/edit/{{key}}' class="btn btn-primary card-link contri_btn fnt" style="width:100%">Edit Form</a><br>
-                <a  type="button" onclick="confirmation(this)"
-                  class="btn btn-danger card-link my-2 contri_btn fnt" style="width:100%">Delete Form</a>
+                <form action="/form-delete/{{key}}" method ="post" onsubmit="return confirmation(this)">
+                <button  type="submit" 
+                  class="btn btn-danger card-link my-2 contri_btn fnt" style="width:100%">Delete Form</button>
+                </form>
             </center>
    
 
@@ -100,12 +102,12 @@
       function confirmation(element) {
         result = confirm("Are you sure to delete this Chapter from the records?")
         if (result == true) {
-          window.location.href = window.location.href + `delete/chapter/${element.id}`
+         return true
 
 
         }
         else {
-
+                return false
         }
       }
     </script>
