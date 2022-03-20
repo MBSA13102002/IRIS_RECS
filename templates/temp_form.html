@@ -528,19 +528,19 @@
         data[uid_field]['type'] = "email"
         data[uid_field]['text'] = "Email"
 
-//         all_input_group_text = document.getElementsByClassName("input-group-text")
-//         if(all_input_group_text.length!=0){
-//           for(let i=0;i<all_input_group_text.length;i++){
-//             let temp_elem =all_input_group_text[i]
-//             temp_elem.addEventListener("input",function(){
+        all_input_group_text = document.getElementsByClassName("input-group-text")
+        if(all_input_group_text.length!=0){
+          for(let i=0;i<all_input_group_text.length;i++){
+            let temp_elem =all_input_group_text[i]
+            temp_elem.addEventListener("input",function(){
           
-//                let parent_id  = temp_elem.parentElement.id
-//                data[parent_id]['text'] = temp_elem.value
-             
-//                temp_elem.setAttribute("value",temp_elem.value)
-//             })
-//           }
-//         }
+               let parent_id  = temp_elem.parentElement.id
+               data[parent_id]['text'] = temp_elem.value
+              document.getElementById("props_"+parent_id).value = temp_elem.value
+               temp_elem.setAttribute("value",temp_elem.value)
+            })
+          }
+        }
          
       }
 
@@ -616,7 +616,7 @@
          
            let parent_id  = temp_elem.parentElement.id
            data[parent_id]['text'] = temp_elem.value
-         
+          document.getElementById("props_"+parent_id).value = temp_elem.value
            temp_elem.setAttribute("value",temp_elem.value)
         })
       }
