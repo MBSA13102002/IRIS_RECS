@@ -186,24 +186,24 @@ def delete(form_id):
 def shorten_url(variable_1):
     if request.method == "POST":
         if request.method == 'POST' and request.cookies.get("__user__"):
-            # url_to_short = request.form['public_url_form']
-            # url = 'https://api-ssl.bitly.com/v4/shorten'
-            # myobj = {
-            #     "long_url": url_to_short
+            url_to_short = request.form['public_url_form']
+            url = 'https://api-ssl.bitly.com/v4/shorten'
+            myobj = {
+                "long_url": url_to_short
             
             
-            # }
-            # x = requests.post(url, json = myobj,headers=header)
-            # short_url = x.link
-            # db.child("Forms").child(request.cookies.get("__user__")).child(variable_1).update({
-            #      "short-url": short_url
-            # })
-            # return short_url
-            short_url = "Bhai Bhai"
+            }
+            x = requests.post(url, json = myobj,headers=header)
+            short_url = x.link
             db.child("Forms").child(request.cookies.get("__user__")).child(variable_1).update({
                  "short-url": short_url
             })
             return short_url
+#             short_url = "Bhai Bhai"
+#             db.child("Forms").child(request.cookies.get("__user__")).child(variable_1).update({
+#                  "short-url": short_url
+#             })
+#             return short_url
 
 
 
